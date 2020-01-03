@@ -1,15 +1,13 @@
 package cn.com.jonpad;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 /**
  * @author Jon Chan
@@ -56,6 +54,67 @@ public class HdfsClient {
     fileSystem.close();
   }
 
+  /**
+   * 下载
+   * @throws Exception
+   */
+  @Test
+  public void testDownload() throws Exception {
+    // 1 获取FS对象
+    FileSystem fileSystem = FileSystem.get(new URI("hdfs://hadoop1:9000"), new Configuration(), "hadoop");
+
+    // 2 执行下载API(删除源文件,HDFS路径,本地路径,是否文件校验)
+    fileSystem.copyToLocalFile(
+      true,
+      new Path("/user/hadoop/staff_only_one_copy.sql"),
+      new Path("/Users/jonchan/Downloads/staff_tmp.sql"),
+      true);
+
+    // 3 关闭资源
+    fileSystem.close();
+  }
+
+
+  /**
+   * 显示所有文件详情详情
+   * @throws Exception
+   */
+  @Test
+  public void testShowDetails() throws Exception {
+    // 1 获取FS对象
+    FileSystem fileSystem = FileSystem.get(new URI("hdfs://hadoop1:9000"), new Configuration(), "hadoop");
+
+    // 2 执行API 递归信息
+    RemoteIterator<LocatedFileStatus> listFiles = fileSystem.listFiles(new Path("/"), true);
+
+    while (listFiles.hasNext()){
+      LocatedFileStatus status = listFiles.next();
+
+      System.out.println("文件名: " + status.getPath().toString());
+      System.out.println("长度: " + status.getLen());
+      System.out.println("权限: " + status.getPermission());
+      System.out.println("分组: " + status.getGroup());
+      System.out.println("类型: " + (status.isFile()?"文件":"文件夹"));
+      // 获取存储的块信息
+      BlockLocation[] blockLocations = status.getBlockLocations();
+
+      for (BlockLocation blockLocation : blockLocations) {
+
+        System.out.print("块存储主机节点: " );
+        // 获取块存储的主机节点
+        String[] hosts = blockLocation.getHosts();
+        for (String host : hosts) {
+          System.out.print(host+";");
+        }
+        System.out.println();
+      }
+      System.out.println("======================");
+
+    }
+
+    // 3 关闭资源
+    fileSystem.close();
+  }
 
 
 
