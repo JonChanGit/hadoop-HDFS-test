@@ -38,6 +38,11 @@ public class HdfsClient {
 
   /**
    * 文件上传测试
+   * 添加配置文件,限制只有一个副本
+   * <p>参数优先级</p>
+   * <p>
+   * 参数优先级排序：（1）客户端代码中设置的值 >（2）ClassPath下的用户自定义配置文件 >（3）然后是服务器的默认配置
+   * </p>
    */
   @Test
   public void testUploadFile() throws Exception {
@@ -45,7 +50,7 @@ public class HdfsClient {
     FileSystem fileSystem = FileSystem.get(new URI("hdfs://hadoop1:9000"), new Configuration(), "hadoop");
 
     // 2 执行上传API
-    fileSystem.copyFromLocalFile(new Path("/Users/jonchan/Downloads/staff.sql"), new Path("/user/hadoop/staff.sql"));
+    fileSystem.copyFromLocalFile(new Path("/Users/jonchan/Downloads/staff.sql"), new Path("/user/hadoop/staff_only_one_copy.sql"));
 
     // 3 关闭资源
     fileSystem.close();
