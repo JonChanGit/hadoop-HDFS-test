@@ -48,7 +48,7 @@ public class HdfsClient {
     FileSystem fileSystem = FileSystem.get(new URI("hdfs://hadoop1:9000"), new Configuration(), "hadoop");
 
     // 2 执行上传API
-    fileSystem.copyFromLocalFile(new Path("/Users/jonchan/Downloads/staff.sql"), new Path("/user/hadoop/staff_only_one_copy.sql"));
+    fileSystem.copyFromLocalFile(new Path("/Users/jonchan/Downloads/apple_health_export/export_cda.xml"), new Path("/user/hadoop/apple_health_export/export_cda.xml"));
 
     // 3 关闭资源
     fileSystem.close();
@@ -74,6 +74,26 @@ public class HdfsClient {
     fileSystem.close();
   }
 
+  /**
+   * 删除文件
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws URISyntaxException
+   */
+  @Test
+  public void testDelete() throws IOException, InterruptedException, URISyntaxException{
+
+    // 1 获取文件系统
+    Configuration configuration = new Configuration();
+    FileSystem fs = FileSystem.get(new URI("hdfs://hadoop1:9000"), configuration, "hadoop");
+
+    // 2 执行删除
+    fs.delete(new Path("/user/test/output/"), true);
+
+    // 3 关闭资源
+    fs.close();
+  }
+
 
   /**
    * 显示所有文件详情详情
@@ -85,7 +105,7 @@ public class HdfsClient {
     FileSystem fileSystem = FileSystem.get(new URI("hdfs://hadoop1:9000"), new Configuration(), "hadoop");
 
     // 2 执行API 递归信息
-    RemoteIterator<LocatedFileStatus> listFiles = fileSystem.listFiles(new Path("/"), true);
+    RemoteIterator<LocatedFileStatus> listFiles = fileSystem.listFiles(new Path("/user"), true);
 
     while (listFiles.hasNext()){
       LocatedFileStatus status = listFiles.next();
@@ -114,6 +134,36 @@ public class HdfsClient {
 
     // 3 关闭资源
     fileSystem.close();
+  }
+
+  /**
+   * 文件和文件夹判断
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws URISyntaxException
+   */
+  @Test
+  public void testListStatus() throws IOException, InterruptedException, URISyntaxException{
+
+    // 1 获取文件配置信息
+    Configuration configuration = new Configuration();
+    FileSystem fs = FileSystem.get(new URI("hdfs://hadoop1:9000"), configuration, "hadoop");
+
+    // 2 判断是文件还是文件夹
+    FileStatus[] listStatus = fs.listStatus(new Path("/user"));
+
+    for (FileStatus fileStatus : listStatus) {
+
+      // 如果是文件
+      if (fileStatus.isFile()) {
+        System.out.println("f:"+fileStatus.getPath().getName());
+      }else {
+        System.out.println("d:"+fileStatus.getPath().getName());
+      }
+    }
+
+    // 3 关闭资源
+    fs.close();
   }
 
 
