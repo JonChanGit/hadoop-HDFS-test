@@ -5,6 +5,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.CombineTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -33,6 +34,11 @@ public class WordCountDriver {
     // 5 设置最终输出kv类型
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(IntWritable.class);
+
+    // 设置小文件切片InputFormat
+    job.setInputFormatClass(CombineTextInputFormat.class);
+    // 最大切片大小4MB
+    CombineTextInputFormat.setMaxInputSplitSize(job,4194304);
 
     // 6 设置输入和输出路径
     FileInputFormat.setInputPaths(job, new Path(args[0]));
