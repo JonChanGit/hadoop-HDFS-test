@@ -1,8 +1,7 @@
-package cn.com.jonpad.mr.flowsum.bean;
+package cn.com.jonpad.mr.flowsum.partitioner;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -15,6 +14,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class FlowDriver {
 
   public static void main(String[] args) throws Exception {
+    // args = new String[]{"~/hadoop-HDFS-Client/test_file/phone_data.txt", "~/Downloads/output"};
     Configuration configuration = new Configuration();
     Job job = Job.getInstance(configuration);
 
@@ -30,6 +30,9 @@ public class FlowDriver {
     // 5 设置最终输出kv类型
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(FlowBean.class);
+
+    job.setPartitionerClass(ProvincePartitioner.class);
+    job.setNumReduceTasks(11);
 
     // 6 设置输入和输出路径
     FileInputFormat.setInputPaths(job, new Path(args[0]));

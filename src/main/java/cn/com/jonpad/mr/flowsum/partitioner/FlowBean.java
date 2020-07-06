@@ -1,4 +1,4 @@
-package cn.com.jonpad.mr.flowsum.bean;
+package cn.com.jonpad.mr.flowsum.partitioner;
 
 import org.apache.hadoop.io.Writable;
 

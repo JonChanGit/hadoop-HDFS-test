@@ -1,5 +1,6 @@
-package cn.com.jonpad.mr.flowsum.bean;
+package cn.com.jonpad.mr.flowsum.partitioner;
 
+import cn.com.jonpad.utils.Assert;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -22,8 +23,16 @@ public class FlowMapper extends Mapper<LongWritable, Text, Text, FlowBean> {
     String phone = items[1];
     k.set(phone);
 
-    v.setDownFlow(Long.parseLong(items[4]));
-    v.setUpFlow(Long.parseLong(items[5]));
+    System.out.println(value.toString());
+
+    String downFlow = items[4];
+    if (!Assert.isEmpty(downFlow)) {
+      v.setDownFlow(Long.parseLong(downFlow));
+    }
+    String upFlow = items[5];
+    if (!Assert.isEmpty(upFlow)) {
+      v.setUpFlow(Long.parseLong(upFlow));
+    }
 
     context.write(k, v);
 
